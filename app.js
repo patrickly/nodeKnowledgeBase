@@ -10,7 +10,9 @@ const app = express();
 
 // Home Route
 app.get('/', function(req, res){
-  res.render('index');
+  res.render('index', {
+    title: 'hello'
+  });
 });
 
 // Start Server
