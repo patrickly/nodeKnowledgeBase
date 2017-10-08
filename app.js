@@ -11,9 +11,18 @@ const app = express();
 // Home Route
 app.get('/', function(req, res){
   res.render('index', {
-    title: 'hello'
+    title: 'Articles'
   });
 });
+
+
+// Add Route
+app.get('/articles/add', function(req, res){
+  res.render('add_articles', {
+    title: 'Add Articles'
+  });
+});
+
 
 // Start Server
 app.listen(3000, function(){
