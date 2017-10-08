@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/patrickly/nodeKnowledgeBase/issues"
   },
-  "homepage": "https://github.com/patrickly/nodeKnowledgeBase#readme"
+  "homepage": "https://github.com/patrickly/nodeKnowledgeBase#readme",
+  "dependencies": {
+    "express": "^4.16.1"
+  }
 }
