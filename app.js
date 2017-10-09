@@ -2,11 +2,51 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const expressValidator = require('express-validator');
+const flash = require('connect-flash');
+const session = require('express-session');
 
 const dbConnectionOptions = {
   useMongoClient: true,
   authSource: 'admin'
 }
+
+/*
+patricks-MacBook-Air:nodeKnowledgeBase patrickly$  nodemon
+[nodemon] 1.12.1
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching: *.*
+[nodemon] starting `node app.js`
+server started on port 3000...
+Connecte to nodekb on MongoDB instance was successful
+(node:65518) DeprecationWarning: Mongoose: mpromise (mongoose's default promise library) is deprecated, plug in your own promise library instead: http://mongoosejs.com/docs/promises.html
+events.js:160
+      throw er; // Unhandled 'error' event
+      ^
+
+TypeError: res.flash is not a function
+    at /Users/patrickly/Desktop/webdev/nodeKB/nodeKnowledgeBase/app.js:145:11
+    at /Users/patrickly/Desktop/webdev/nodeKB/nodeKnowledgeBase/node_modules/mongoose/lib/model.js:3919:16
+    at /Users/patrickly/Desktop/webdev/nodeKB/nodeKnowledgeBase/node_modules/mongoose/lib/services/model/applyHooks.js:162:20
+    at _combinedTickCallback (internal/process/next_tick.js:73:7)
+    at process._tickCallback (internal/process/next_tick.js:104:9)
+[nodemon] app crashed - waiting for file changes before starting...
+[nodemon] restarting due to changes... // I added this to line 49: mongoose.Promise = global.Promise;
+[nodemon] starting `node app.js`
+server started on port 3000...
+Connecte to nodekb on MongoDB instance was successful
+*/
+
+/*
+Aaron P's comment from Part 5:
+If you are hitting some depreciation errors "open()..."  confirm same error at https://github.com/Automattic/mongoose/issues/5399
+Simplest fix is "npm remove mongoose" then "npm install mongoose@4.10.8 --save"    (this appears to be a recently introduced bug)
+or
+the promise depreciation error.
+Simplest fix is to add "mongoose.Promise = global.Promise;"  right before your connection string
+
+*/
+mongoose.Promise = global.Promise;
 
 // Credit goes to the youtube comments in part 4 of the series for sharing a fix to deal with mongoose >= 4.11.0
 mongoose.connect('mongodb://localhost/nodekb', {
@@ -47,6 +87,43 @@ const app = express();
 
 // Set Public folder
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Express Session Middleware
+app.use(session({
+  secret: 'keyboard cat',
+  resave: true,
+  saveUninitialized: true,
+}));
+
+// Express Messages middleware
+app.use(require('connect-flash')());
+app.use(function (req, res, next) {
+  res.locals.messages = require('express-messages')(req, res);
+  next();
+});
+
+
+// Express Validator Middleware
+app.use(expressValidator({
+  errorFormatter: function(param, msg, value) {
+      var namespace = param.split('.')
+      , root    = namespace.shift()
+      , formParam = root;
+
+    while(namespace.length) {
+      formParam += '[' + namespace.shift() + ']';
+    }
+    return {
+      param : formParam,
+      msg   : msg,
+      value : value
+    };
+  }
+}));
+
+
+
+
 
 // Home Route
 app.get('/', function(req, res){
@@ -102,6 +179,7 @@ app.post('/articles/add', function(req, res){
       console.log(err);
       return;
     } else{
+      res.flash('success', 'Article Added');
       res.redirect('/');
     }
   })
@@ -133,7 +211,7 @@ app.delete('/article/:id', function(req, res){
     if(err){
       console.log(err);
     }
-    res.send('Success'); 
+    res.send('Success');
   });
 });
 
