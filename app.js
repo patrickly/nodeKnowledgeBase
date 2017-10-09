@@ -6,49 +6,13 @@ const expressValidator = require('express-validator');
 const flash = require('connect-flash');
 const session = require('express-session');
 
+
+
 const dbConnectionOptions = {
   useMongoClient: true,
   authSource: 'admin'
 }
 
-/*
-patricks-MacBook-Air:nodeKnowledgeBase patrickly$  nodemon
-[nodemon] 1.12.1
-[nodemon] to restart at any time, enter `rs`
-[nodemon] watching: *.*
-[nodemon] starting `node app.js`
-server started on port 3000...
-Connecte to nodekb on MongoDB instance was successful
-(node:65518) DeprecationWarning: Mongoose: mpromise (mongoose's default promise library) is deprecated, plug in your own promise library instead: http://mongoosejs.com/docs/promises.html
-events.js:160
-      throw er; // Unhandled 'error' event
-      ^
-
-TypeError: res.flash is not a function
-    at /Users/patrickly/Desktop/webdev/nodeKB/nodeKnowledgeBase/app.js:145:11
-    at /Users/patrickly/Desktop/webdev/nodeKB/nodeKnowledgeBase/node_modules/mongoose/lib/model.js:3919:16
-    at /Users/patrickly/Desktop/webdev/nodeKB/nodeKnowledgeBase/node_modules/mongoose/lib/services/model/applyHooks.js:162:20
-    at _combinedTickCallback (internal/process/next_tick.js:73:7)
-    at process._tickCallback (internal/process/next_tick.js:104:9)
-[nodemon] app crashed - waiting for file changes before starting...
-[nodemon] restarting due to changes... // I added this to line 49: mongoose.Promise = global.Promise;
-[nodemon] starting `node app.js`
-server started on port 3000...
-Connecte to nodekb on MongoDB instance was successful
-*/
-
-/*
-Aaron P's comment from Part 5:
-If you are hitting some depreciation errors "open()..."  confirm same error at https://github.com/Automattic/mongoose/issues/5399
-Simplest fix is "npm remove mongoose" then "npm install mongoose@4.10.8 --save"    (this appears to be a recently introduced bug)
-or
-the promise depreciation error.
-Simplest fix is to add "mongoose.Promise = global.Promise;"  right before your connection string
-
-*/
-mongoose.Promise = global.Promise;
-
-// Credit goes to the youtube comments in part 4 of the series for sharing a fix to deal with mongoose >= 4.11.0
 mongoose.connect('mongodb://localhost/nodekb', {
   useMongoClient: true
 });
@@ -71,7 +35,7 @@ db.on('error', function(err){
 const app = express();
 
   // Bring in Models
-  let Article = require('./models/article');
+let Article = require('./models/article');
 
 
  // Load View Engine
@@ -87,6 +51,7 @@ const app = express();
 
 // Set Public folder
 app.use(express.static(path.join(__dirname, 'public')));
+
 
 // Express Session Middleware
 app.use(session({
@@ -179,10 +144,10 @@ app.post('/articles/add', function(req, res){
       console.log(err);
       return;
     } else{
-      res.flash('success', 'Article Added');
+      req.flash('success', 'Article Added'); // I see the problem. I put res.flash instead of req.flash
       res.redirect('/');
     }
-  })
+  });
 });
 
 // Update Submit POST route
