@@ -60,6 +60,13 @@ app.get('/articles/add', function(req, res){
   });
 });
 
+// Add Submit POST route
+app.post('/articles/add', function(req, res){
+  let article = new Article();
+//  article.title = req.body.title;
+  console.log(req.body.title);
+});
+
 
 // Start Server
 app.listen(3000, function(){
