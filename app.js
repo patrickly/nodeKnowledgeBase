@@ -86,10 +86,6 @@ app.use(expressValidator({
   }
 }));
 
-
-
-
-
 // Home Route
 app.get('/', function(req, res){
   Article.find({}, function(err, articles){
@@ -105,97 +101,9 @@ app.get('/', function(req, res){
   });
 });
 
-// Get Single Article
-app.get('/article/:id', function(req,res){
-  Article.findById(req.params.id, function(err, article){
-    res.render('article', {
-      article: article
-    });
-  });
-});
 
-// Load Edit Form
-app.get('/article/edit/:id', function(req,res){
-  Article.findById(req.params.id, function(err, article){
-    res.render('edit_article', {
-      title:'Edit Article',
-      article: article
-    });
-  });
-});
-
-
-// Add Route
-app.get('/articles/add', function(req, res){
-  res.render('add_articles', {
-    title: 'Add Articles'
-  });
-});
-
-// Add Submit POST route
-app.post('/articles/add', function(req, res){
-  req.checkBody('title', 'Title is required').notEmpty();
-  req.checkBody('author', 'Author is required').notEmpty();
-  req.checkBody('body', 'Body is required').notEmpty();
-
-  // Get Errors
-  let errors = req.validationErrors();
-
-  if(errors){
-    res.render('add_articles', {
-    title: 'Add Article',
-    errors: errors
-    });
-  } else {
-    let article = new Article();
-    article.title = req.body.title;
-    article.author = req.body.author;
-    article.body =  req.body.body;
-
-    article.save(function(err){
-      if(err){
-        console.log(err);
-        return;
-      } else{
-        req.flash('success', 'Article Added'); // I see the problem. I put res.flash instead of req.flash
-        res.redirect('/');
-      }
-    });
-
-  }
-});
-
-// Update Submit POST route
-app.post('/articles/edit/:id', function(req, res){
-  let article = {};
-  article.title = req.body.title;
-  article.author = req.body.author;
-  article.body =  req.body.body;
-
-  let query = {_id:req.params.id}
-
-  Article.update(query, article, function(err){
-    if(err){
-      console.log(err);
-      return;
-    } else{
-      req.flash('success', 'Article Updated');
-      res.redirect('/');
-    }
-  })
-});
-
-app.delete('/article/:id', function(req, res){
-  let query = {_id:req.params.id}
-
-  Article.remove(query,function(err){
-    if(err){
-      console.log(err);
-    }
-    res.send('Success');
-  });
-});
-
+let articles = require('./routes/articles');
+app.use('/articles', articles);
 
 // Start Server
 app.listen(3000, function(){
