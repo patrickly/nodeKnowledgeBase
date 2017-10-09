@@ -1,18 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
+
+
 // Bring in Article Model
 let Article = require('../models/article');
 
 
-// Get Single Article
-router.get('/:id', function(req,res){
-  Article.findById(req.params.id, function(err, article){
-    res.render('article', {
-      article: article
-    });
-  });
-});
+
 
 // Add Route
 router.get('/add', function(req, res){
@@ -92,6 +87,17 @@ router.delete('/:id', function(req, res){
       console.log(err);
     }
     res.send('Success');
+  });
+});
+
+
+// Get Single Article
+// Move this router down beneath the other routes. Part 8 video, 24:20 mark.
+router.get('/:id', function(req,res){
+  Article.findById(req.params.id, function(err, article){
+    res.render('article', {
+      article: article
+    });
   });
 });
 
