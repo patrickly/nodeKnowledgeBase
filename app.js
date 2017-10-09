@@ -1,8 +1,37 @@
 const express = require('express');
 const path = require('path');
+const mongoose = require('mongoose');
+
+const dbConnectionOptions = {
+  useMongoClient: true,
+  authSource: 'admin'
+}
+
+// Credit goes to the youtube comments in part 4 of the series for sharing a fix to deal with mongoose >= 4.11.0
+mongoose.connect('mongodb://localhost/nodekb', {
+  useMongoClient: true
+});
+//mongoose.connect('mongodb://user:password@localhost:27017/nodekb', dbConnectionOptions);
+
+let db = mongoose.connection;
+
+// Check connection
+db.once('open', function(){
+  console.log('Connecte to nodekb on MongoDB instance was successful');
+});
+
+
+// Check for DB errors
+db.on('error', function(err){
+    console.log(err);
+});
 
 // Init App
 const app = express();
+
+  // Bring in Models
+  let Article = require('./models/article');
+
 
  // Load View Engine
  app.set('views', path.join(__dirname, 'views'));
@@ -10,29 +39,16 @@ const app = express();
 
 // Home Route
 app.get('/', function(req, res){
-  let articles = [
-    {
-      id: 1,
-      title: 'Article One',
-      author: 'John Doe',
-      body: 'This is article one'
-    },
-    {
-      id: 2,
-      title: 'Article Two',
-      author: 'Jane Doe',
-      body: 'This is article two'
-    },
-    {
-      id: 3,
-      title: 'Article Three',
-      author: 'Play Doh',
-      body: 'This is article three'
+  Article.find({}, function(err, articles){
+    if(err){
+      console.log(err);
+    } else {
+
+      res.render('index', {
+        title: 'Articles',
+        articles: articles
+      });
     }
-  ];
-  res.render('index', {
-    title: 'Articles',
-    articles: articles
   });
 });
 
