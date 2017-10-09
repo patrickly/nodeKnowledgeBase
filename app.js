@@ -45,6 +45,9 @@ const app = express();
  // parse application/json
  app.use(bodyParser.json())
 
+// Set Public folder
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Home Route
 app.get('/', function(req, res){
   Article.find({}, function(err, articles){
