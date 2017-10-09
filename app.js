@@ -10,8 +10,29 @@ const app = express();
 
 // Home Route
 app.get('/', function(req, res){
+  let articles = [
+    {
+      id: 1,
+      title: 'Article One',
+      author: 'John Doe',
+      body: 'This is article one'
+    },
+    {
+      id: 2,
+      title: 'Article Two',
+      author: 'Jane Doe',
+      body: 'This is article two'
+    },
+    {
+      id: 3,
+      title: 'Article Three',
+      author: 'Play Doh',
+      body: 'This is article three'
+    }
+  ];
   res.render('index', {
-    title: 'Articles'
+    title: 'Articles',
+    articles: articles
   });
 });
 
