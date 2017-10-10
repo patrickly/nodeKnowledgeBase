@@ -4,6 +4,8 @@ const router = express.Router();
 // Bring in Article Model
 let Article = require('../models/article');
 
+// USer model
+let User = require('../models/user');
 
 
 
@@ -17,7 +19,7 @@ router.get('/add', function(req, res){
 // Add Submit POST route
 router.post('/add', function(req, res){
   req.checkBody('title', 'Title is required').notEmpty();
-  req.checkBody('author', 'Author is required').notEmpty();
+  //req.checkBody('author', 'Author is required').notEmpty();
   req.checkBody('body', 'Body is required').notEmpty();
 
   // Get Errors
@@ -31,7 +33,7 @@ router.post('/add', function(req, res){
   } else {
     let article = new Article();
     article.title = req.body.title;
-    article.author = req.body.author;
+    article.author = req.user._id;
     article.body =  req.body.body;
 
     article.save(function(err){
@@ -93,8 +95,11 @@ router.delete('/:id', function(req, res){
 // Move this router down beneath the other routes. Part 8 video, 24:20 mark.
 router.get('/:id', function(req,res){
   Article.findById(req.params.id, function(err, article){
-    res.render('article', {
-      article: article
+    User.findById(article.author, function(err, user){
+      res.render('article', {
+        article: article,
+        author: user.name,
+      });
     });
   });
 });
