@@ -10,7 +10,7 @@ let User = require('../models/user');
 
 
 // Add Route
-router.get('/add', function(req, res){
+router.get('/add', ensureAuthenticated, function(req, res){
   res.render('add_articles', {
     title: 'Add Articles'
   });
@@ -70,8 +70,12 @@ router.post('/edit/:id', function(req, res){
 });
 
 // Load Edit Form
-router.get('/edit/:id', function(req,res){
+router.get('/edit/:id',ensureAuthenticated, function(req,res){
   Article.findById(req.params.id, function(err, article){
+    if(article.author != req.user._id){ // put one underscore, not two underscores
+      req.flash('danger', 'Not Authorized yo');
+      res.redirect('/');
+    }
     res.render('edit_article', {
       title:'Edit Article',
       article: article
@@ -103,5 +107,16 @@ router.get('/:id', function(req,res){
     });
   });
 });
+
+// access control
+
+function ensureAuthenticated(req, res, next){
+  if(req.isAuthenticated()){
+    return next();
+  } else{
+    req.flash('danger', 'Please login');
+    res.redirect('/users/login');
+  }
+}
 
 module.exports = router;
