@@ -83,15 +83,27 @@ router.get('/edit/:id',ensureAuthenticated, function(req,res){
   });
 });
 
+// delete article
 router.delete('/:id', function(req, res){
+
+  if(!req.user._id){
+    res.status(500).send();
+  }
   let query = {_id:req.params.id}
 
-  Article.remove(query,function(err){
-    if(err){
-      console.log(err);
+  Article.findById(req.params.id, function(err, article){
+    if(article.author != req.user._id){
+      res.status(500).send();
+    } else {
+      Article.remove(query,function(err){
+        if(err){
+          console.log(err);
+        }
+        res.send('Success');
+      });
     }
-    res.send('Success');
   });
+
 });
 
 
