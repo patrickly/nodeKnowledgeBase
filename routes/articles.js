@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-
-
 // Bring in Article Model
 let Article = require('../models/article');
 
