@@ -13,7 +13,7 @@ Check by typing:
 Then select a directory for git cloning in your terminal
 type:
 * git clone https://github.com/patrickly/nodeKnowledgeBase.git
-Might take a while to download
+* Might take a while to download
 
 type: 
 * ls
