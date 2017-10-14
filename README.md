@@ -23,7 +23,7 @@ check to see if you're in the directory that has package.json
 if you see package.json
 type:
 * npm install
-* Last commit to this repository was on 10/9/17, so some node_modules/dependencies may become deprecated as time goes on
+* Last commit to this repository was on 10/13/17, so some node_modules/dependencies may become deprecated as time goes on
 
 type and enter 3 times:
 * command+T
